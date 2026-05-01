@@ -233,7 +233,7 @@ function renderCards(){
   if(!filtered.length){grid.innerHTML='<div class="empty">No players match this filter.</div>';pagEl.innerHTML='';return;}
   const totalPages=Math.ceil(filtered.length/PAGE_SIZE);
   if(page>totalPages)page=totalPages;
-  const slice=filtered.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);
+  const slice=filtered.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE); 
   grid.innerHTML=slice.map(p=>{
     const m=meansCache[p.id];
     const mean=m?m.mean:null;
