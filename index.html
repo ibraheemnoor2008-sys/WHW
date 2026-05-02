@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>What's He Worth</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F8F9FA;
+    --surface: #FFFFFF;
+    --surface2: #E9ECEF;
+    --surface3: #DEE2E6;
+    --border: rgba(0,0,0,0.08);
+    --border2: rgba(0,102,255,0.2);
+    --text: #0D0D0D;
+    --muted: rgba(80,80,80,0.6);
+    --accent: #0066FF;
+    --accent-dark: #0052CC;
+    --header-grad: #E9ECEF;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Inter', sans-serif;
+  }
+  html.dark {
+    --bg: #0D0D0D;
+    --surface: #141414;
+    --surface2: #1E1E1E;
+    --surface3: #282828;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(0,102,255,0.25);
+    --text: #F8F9FA;
+    --muted: rgba(180,180,180,0.55);
+    --accent: #3B82F6;
+    --accent-dark: #2563EB;
+    --header-grad: #141414;
+  }
+  .theme-toggle { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 16px; color: var(--text); display: flex; align-items: center; gap: 6px; font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; transition: background 0.2s; }
+  .theme-toggle:hover { background: var(--surface3); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-body); min-height: 100vh; }
+
+  /* HEADER */
+  header { padding: 0; border-bottom: 1px solid var(--border); background: linear-gradient(180deg, var(--header-grad) 0%, var(--bg) 100%); }
+  .header-inner { padding: 1.75rem 1.5rem 1.5rem; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+  .logo-wrap { display: flex; align-items: center; gap: 14px; }
+  .logo-badge { width: 44px; height: 44px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .logo-badge svg { width: 26px; height: 26px; }
+  .logo { font-family: var(--font-display); font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800; letter-spacing: 0.03em; line-height: 1; text-transform: uppercase; }
+  .logo span { color: var(--text); }
+  .subtitle { font-size: 12px; color: var(--muted); font-weight: 400; margin-top: 3px; letter-spacing: 0.05em; text-transform: uppercase; }
+  .live-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); background: rgba(0,102,255,0.08); border: 1px solid rgba(0,102,255,0.25); border-radius: 6px; padding: 6px 12px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+
+  /* TABS */
+  .tabs { display: flex; padding: 0 1.5rem; border-bottom: 1px solid var(--border); background: var(--surface); }
+  .tab { padding: 1rem 1.25rem; font-size: 12px; font-weight: 600; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); cursor: pointer; border-bottom: 2px solid transparent; transition: color 0.2s, border-color 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+  .tab.active { color: var(--text); border-bottom-color: var(--text); }
+  .tab:hover { color: var(--text); }
+
+  /* FILTERS */
+  .filters { display: flex; gap: 8px; flex-wrap: wrap; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--bg); }
+  .filters select, .filters input[type=text] { background: var(--surface2); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; font-size: 13px; font-family: var(--font-body); cursor: pointer; outline: none; }
+  .filters input[type=text] { width: 180px; cursor: text; }
+  .filters input[type=text]::placeholder { color: var(--muted); }
+  .filters select:focus, .filters input:focus { border-color: rgba(59,130,246,0.5); }
+
+  /* MAIN */
+  main { padding: 1.5rem; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+
+  /* CARDS */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; transition: border-color 0.2s, transform 0.15s; }
+  .card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .card-top { display: flex; align-items: center; gap: 12px; margin-bottom: 1rem; }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.06); }
+  .player-name { font-size: 15px; font-weight: 600; color: var(--text); }
+  .player-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .pos-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 4px; background: var(--surface3); color: var(--muted); margin-left: 4px; vertical-align: middle; }
+
+  /* STATS */
+  .stats-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .stat { flex: 1; background: var(--surface2); border-radius: 10px; padding: 10px 12px; border: 1px solid var(--border); }
+  .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 4px; font-weight: 500; }
+  .stat-value { font-size: 18px; font-weight: 700; font-family: var(--font-display); letter-spacing: 0.02em; }
+  .stat-value.yellow { color: var(--text); }
+
+  /* VOTE */
+  .vote-label { font-size: 11px; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 500; }
+  .slider-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--accent); cursor: pointer; height: 4px; }
+  .slider-display { font-size: 15px; font-weight: 700; font-family: var(--font-display); color: var(--text); min-width: 64px; text-align: right; letter-spacing: 0.02em; }
+  .vote-btn { width: 100%; padding: 10px; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; font-family: var(--font-body); cursor: pointer; border-radius: 8px; border: none; background: var(--accent); color: #FFFFFF; transition: background 0.2s, transform 0.1s; }
+  .vote-btn:hover:not(:disabled) { background: var(--accent); }
+  .vote-btn:active:not(:disabled) { transform: scale(0.98); }
+  .vote-btn:disabled { cursor: default; }
+  .vote-btn.voted { background: transparent !important; border: 1px solid rgba(255,224,51,0.3); color: var(--text); }
+
+  /* LEADERBOARD */
+  .lb-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); padding: 14px 16px; border-bottom: 1px solid var(--border); background: var(--surface2); }
+  td { padding: 12px 16px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,224,51,0.02); }
+  .rank { font-family: var(--font-display); font-size: 20px; font-weight: 800; width: 36px; color: var(--muted); }
+  .rank.gold { color: #FFD700; }
+  .rank.silver { color: #C0C0C0; }
+  .rank.bronze { color: #CD7F32; }
+  .lb-avatar { width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; margin-right: 10px; vertical-align: middle; border: 1px solid rgba(255,255,255,0.06); }
+  .lb-name { font-weight: 600; font-size: 14px; color: var(--text); }
+  .lb-club { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .pos-badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 4px; background: var(--surface2); color: var(--muted); letter-spacing: 0.05em; }
+  .mean-val { font-weight: 800; font-size: 16px; font-family: var(--font-display); color: var(--text); letter-spacing: 0.02em; }
+  .votes-col { font-size: 12px; color: var(--muted); }
+  .bar-wrap { height: 3px; background: var(--surface3); border-radius: 2px; margin-top: 5px; min-width: 60px; }
+  .bar { height: 3px; border-radius: 2px; background: var(--accent); opacity: 0.9; }
+
+  /* MISC */
+  .empty { text-align: center; padding: 3rem; color: var(--muted); font-size: 14px; }
+  .loading { display: flex; align-items: center; justify-content: center; padding: 3rem; gap: 10px; color: var(--muted); font-size: 14px; }
+  .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--text); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--surface2); border: 1px solid var(--accent); color: var(--text); font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; padding: 10px 20px; border-radius: 6px; opacity: 0; transition: transform 0.3s, opacity 0.3s; z-index: 999; white-space: nowrap; }
+  .toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  .pagination { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 1.5rem 0 0; }
+  .page-btn { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 7px 16px; font-size: 12px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; font-family: var(--font-body); cursor: pointer; transition: border-color 0.2s; }
+  .page-btn:hover:not(:disabled) { border-color: rgba(59,130,246,0.5); color: var(--text); }
+  .page-btn:disabled { opacity: 0.3; cursor: default; }
+  .page-info { font-size: 12px; color: var(--muted); }
+
+  /* TRENDING */
+  .trending-section { padding: 1.5rem; }
+  .trending-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+  .trending-title .fire { font-size: 1.2rem; }
+  .trending-list { display: flex; flex-direction: column; gap: 10px; }
+  .trending-item { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1rem 1.25rem; display: flex; align-items: center; gap: 14px; transition: border-color 0.2s; }
+  .trending-item:hover { border-color: var(--border2); }
+  .trending-rank { font-family: var(--font-display); font-size: 1.6rem; font-weight: 800; width: 32px; text-align: center; color: var(--muted); flex-shrink: 0; }
+  .trending-rank.t1 { color: var(--accent); }
+  .trending-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; border: 2px solid rgba(255,255,255,0.06); }
+  .trending-info { flex: 1; min-width: 0; }
+  .trending-name { font-size: 15px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .trending-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .trending-votes { text-align: right; flex-shrink: 0; }
+  .trending-vote-count { font-family: var(--font-display); font-size: 1.4rem; font-weight: 800; color: var(--accent); line-height: 1; }
+  .trending-vote-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); font-weight: 500; }
+  .trending-bar-wrap { height: 3px; background: var(--surface2); border-radius: 2px; margin-top: 6px; }
+  .trending-bar { height: 3px; border-radius: 2px; background: var(--accent); }
+  .trending-updated { text-align: center; font-size: 11px; color: var(--muted); padding: 1rem 0 0; letter-spacing: 0.04em; }
+  .progress-wrap { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); background: var(--surface); display: flex; align-items: center; gap: 14px; }
+  .progress-text { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: 0.05em; text-transform: uppercase; white-space: nowrap; }
+  .progress-text strong { color: var(--text); }
+  .progress-track { flex: 1; height: 6px; background: var(--surface2); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 99px; background: var(--accent); transition: width 0.4s ease; }
+  .progress-pct { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 36px; text-align: right; font-family: var(--font-display); letter-spacing: 0.03em; }
+  /* CLUB PAGES */
+  .clubs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .club-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 1.25rem; cursor: pointer; transition: border-color 0.2s, transform 0.15s; }
+  .club-card:hover { border-color: var(--border2); transform: translateY(-1px); }
+  .club-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  .club-name { font-size: 17px; font-weight: 700; color: var(--text); }
+  .club-fav { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; font-size: 16px; cursor: pointer; padding: 5px 10px; line-height: 1; transition: background 0.2s, border-color 0.2s; }
+  .club-fav:hover { background: var(--surface3); border-color: var(--border2); }
+  .club-fav.active { background: rgba(255,200,0,0.12); border-color: rgba(255,200,0,0.4); }
+  .club-stats { display: flex; gap: 8px; margin-bottom: 1rem; }
+  .club-stat { flex: 1; background: var(--surface2); border-radius: 10px; padding: 10px 12px; }
+  .club-stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); margin-bottom: 3px; font-weight: 500; }
+  .club-stat-value { font-size: 18px; font-weight: 700; font-family: var(--font-display); color: var(--accent); }
+  .club-top-players { font-size: 12px; color: var(--muted); }
+  .club-top-players span { color: var(--text); font-weight: 500; }
+  /* CLUB DETAIL PAGE */
+  .back-btn { display: flex; align-items: center; gap: 8px; background: none; border: none; color: var(--accent); font-size: 13px; font-weight: 600; cursor: pointer; font-family: var(--font-body); padding: 1rem 1.5rem; letter-spacing: 0.04em; }
+  .back-btn:hover { opacity: 0.8; }
+  .club-header { padding: 0 1.5rem 1.25rem; border-bottom: 1px solid var(--border); }
+  .club-title { font-family: var(--font-display); font-size: 2.2rem; font-weight: 800; letter-spacing: 0.03em; text-transform: uppercase; }
+  .club-title span { color: var(--accent); }
+  .club-summary { display: flex; gap: 12px; margin-top: 1rem; flex-wrap: wrap; }
+  .club-summary-stat { background: var(--surface2); border-radius: 10px; padding: 10px 16px; }
+  .club-summary-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); font-weight: 500; margin-bottom: 3px; }
+  .club-summary-value { font-size: 20px; font-weight: 800; font-family: var(--font-display); color: var(--accent); }
+  .no-favs { text-align: center; padding: 3rem 1.5rem; color: var(--muted); font-size: 14px; line-height: 1.6; }
+  footer span { color: var(--text); }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <div class="logo-badge">
+        <svg viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="13" cy="13" r="11" stroke="#FFFFFF" stroke-width="2"/>
+          <path d="M8 13L11 16L18 9" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div>
+        <div class="logo">WHAT'S HE <span>WORTH</span></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()">🌙 Dark</button>
+      <div class="live-badge"><div class="live-dot"></div> Live votes</div>
+    </div>
+  </div>
+</header>
+<div class="tabs">
+  <button class="tab active" onclick="setTab('trending',this)">🔥 Trending</button>
+  <button class="tab" onclick="setTab('vote',this)">Players</button>
+  <button class="tab" onclick="setTab('clubs',this)">Clubs</button>
+  <button class="tab" onclick="setTab('leaderboard',this)">Leaderboard</button>
+</div>
+<div class="progress-wrap" id="progress-wrap">
+  <span class="progress-text">Your progress <strong id="prog-count">0</strong> / 500</span>
+  <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  <span class="progress-pct" id="prog-pct">0%</span>
+</div>
+<div id="trending-view">
+  <div class="trending-section">
+    <div class="trending-title"><span class="fire">🔥</span> Most voted in last 24 hours</div>
+    <div class="trending-list" id="trending-list"><div class="loading"><div class="spinner"></div> Loading...</div></div>
+    <div class="trending-updated" id="trending-updated"></div>
+  </div>
+</div>
+<div id="vote-view" style="display:none">
+  <div style="padding:1.25rem 1.5rem 0; border-bottom:1px solid var(--border);">
+    <input type="text" id="search" placeholder="🔍  Search any player..." oninput="page=1;renderCards()" style="width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;font-family:var(--font-body);outline:none;margin-bottom:1rem;">
+    <div class="filters" style="padding:0 0 1rem;border:none;">
+      <select id="filter-club" onchange="page=1;renderCards()"><option value="">All clubs</option></select>
+      <select id="filter-pos" onchange="page=1;renderCards()">
+        <option value="">All positions</option>
+        <option value="GK">GK</option><option value="DEF">DEF</option>
+        <option value="MID">MID</option><option value="FWD">FWD</option>
+      </select>
+      <select id="filter-voted" onchange="page=1;renderCards()">
+        <option value="">All players</option>
+        <option value="unvoted">Not voted yet</option>
+        <option value="voted">Voted</option>
+      </select>
+    </div>
+  </div>
+  <main>
+    <div class="grid" id="grid"><div class="loading"><div class="spinner"></div> Loading players...</div></div>
+    <div class="pagination" id="pagination"></div>
+  </main>
+</div>
+<div id="lb-view" style="display:none">
+  <div class="filters">
+    <input type="text" id="lb-search" placeholder="Search player..." oninput="renderLeaderboard()">
+    <select id="lb-filter-club" onchange="renderLeaderboard()"><option value="">All clubs</option></select>
+    <select id="lb-filter-pos" onchange="renderLeaderboard()">
+      <option value="">All positions</option>
+      <option value="GK">GK</option><option value="DEF">DEF</option>
+      <option value="MID">MID</option><option value="FWD">FWD</option>
+    </select>
+  </div>
+  <main><div id="lb-content"><div class="loading"><div class="spinner"></div> Loading...</div></div></main>
+</div>
+<div id="clubs-view" style="display:none">
+  <div id="clubs-list-view">
+    <div style="padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);">
+      <input type="text" id="club-search" placeholder="🔍  Search clubs..." oninput="renderClubs()" style="width:100%;background:var(--surface2);color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px 14px;font-size:14px;font-family:var(--font-body);outline:none;">
+    </div>
+    <main><div class="clubs-grid" id="clubs-grid"></div></main>
+  </div>
+  <div id="club-detail-view" style="display:none">
+    <button class="back-btn" onclick="showClubsList()">← Back to Clubs</button>
+    <div class="club-header">
+      <div class="club-title" id="club-detail-name"></div>
+      <div class="club-summary" id="club-detail-summary"></div>
+    </div>
+    <main><div class="grid" id="club-detail-grid"></div></main>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const SUPABASE_URL='https://pducuhsrzbfeovkmqppr.supabase.co';
+const SUPABASE_KEY='sb_publishable_Bsg8pWkQHfd5ZYJ8L-oJUg_SdsKGmYx';
+const PAGE_SIZE=24;
+let page=1;
+
+const clubTheme={
+  'Arsenal':['#3d1a10','#ff7c5c'],'Aston Villa':['#1a0d2e','#c084fc'],
+  'Bournemouth':['#3d0d0d','#ff5c5c'],'Brentford':['#2e1a0d','#ffb347'],
+  'Brighton':['#0d1f3d','#5c9eff'],'Chelsea':['#0d1f3d','#5c9eff'],
+  'Crystal Palace':['#1a0d2e','#c084fc'],'Everton':['#0d1f3d','#5c9eff'],
+  'Fulham':['#2a2a2a','#e5e5e5'],'Ipswich':['#0d1f3d','#5c9eff'],
+  'Leicester':['#0d1f3d','#5c9eff'],'Liverpool':['#3d0d0d','#ff5c5c'],
+  'Man City':['#0d3326','#00FF87'],'Man United':['#3d0d0d','#ff5c5c'],
+  'Newcastle':['#1a1a1a','#e5e5e5'],'Nottm Forest':['#3d0d0d','#ff5c5c'],
+  'Southampton':['#3d0d0d','#ff5c5c'],'Spurs':['#1e1e2e','#a78bfa'],
+  'West Ham':['#1a0d2e','#c084fc'],'Wolves':['#2e1a0d','#ffb347'],
+};
+
+function ini(n){return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();}
+
+const rawPlayers=[
+  {id:1,name:'David Raya',club:'Arsenal',pos:'GK',max:60},{id:2,name:'Bukayo Saka',club:'Arsenal',pos:'FWD',max:200},{id:3,name:'Martin Ødegaard',club:'Arsenal',pos:'MID',max:180},{id:4,name:'Declan Rice',club:'Arsenal',pos:'MID',max:180},{id:5,name:'Gabriel Magalhães',club:'Arsenal',pos:'DEF',max:120},{id:6,name:'William Saliba',club:'Arsenal',pos:'DEF',max:150},{id:7,name:'Kai Havertz',club:'Arsenal',pos:'FWD',max:120},{id:8,name:'Leandro Trossard',club:'Arsenal',pos:'FWD',max:80},{id:9,name:'Gabriel Martinelli',club:'Arsenal',pos:'FWD',max:100},{id:10,name:'Ben White',club:'Arsenal',pos:'DEF',max:80},{id:11,name:'Jurriën Timber',club:'Arsenal',pos:'DEF',max:80},{id:12,name:'Thomas Partey',club:'Arsenal',pos:'MID',max:50},{id:13,name:'Oleksandr Zinchenko',club:'Arsenal',pos:'DEF',max:40},{id:14,name:'Jakub Kiwior',club:'Arsenal',pos:'DEF',max:40},{id:15,name:'Myles Lewis-Skelly',club:'Arsenal',pos:'DEF',max:60},{id:16,name:'Ethan Nwaneri',club:'Arsenal',pos:'MID',max:80},{id:17,name:'Riccardo Calafiori',club:'Arsenal',pos:'DEF',max:80},{id:18,name:'Eddie Nketiah',club:'Arsenal',pos:'FWD',max:40},{id:19,name:'Emile Smith Rowe',club:'Arsenal',pos:'MID',max:50},{id:20,name:'Aaron Ramsdale',club:'Arsenal',pos:'GK',max:30},{id:21,name:'Takehiro Tomiyasu',club:'Arsenal',pos:'DEF',max:30},{id:22,name:'Fabio Vieira',club:'Arsenal',pos:'MID',max:30},{id:23,name:'Kieran Tierney',club:'Arsenal',pos:'DEF',max:30},{id:24,name:'Raheem Sterling',club:'Arsenal',pos:'FWD',max:40},{id:25,name:'Nuno Tavares',club:'Arsenal',pos:'DEF',max:20},
+  {id:26,name:'Emiliano Martínez',club:'Aston Villa',pos:'GK',max:60},{id:27,name:'Ollie Watkins',club:'Aston Villa',pos:'FWD',max:120},{id:28,name:'Leon Bailey',club:'Aston Villa',pos:'FWD',max:60},{id:29,name:'Ezri Konsa',club:'Aston Villa',pos:'DEF',max:60},{id:30,name:'Pau Torres',club:'Aston Villa',pos:'DEF',max:60},{id:31,name:'Morgan Rogers',club:'Aston Villa',pos:'MID',max:80},{id:32,name:'Matty Cash',club:'Aston Villa',pos:'DEF',max:40},{id:33,name:'John McGinn',club:'Aston Villa',pos:'MID',max:40},{id:34,name:'Boubacar Kamara',club:'Aston Villa',pos:'MID',max:50},{id:35,name:'Youri Tielemans',club:'Aston Villa',pos:'MID',max:40},{id:36,name:'Amadou Onana',club:'Aston Villa',pos:'MID',max:70},{id:37,name:'Moussa Diaby',club:'Aston Villa',pos:'FWD',max:60},{id:38,name:'Jhon Durán',club:'Aston Villa',pos:'FWD',max:80},{id:39,name:'Ian Maatsen',club:'Aston Villa',pos:'DEF',max:50},{id:40,name:'Jacob Ramsey',club:'Aston Villa',pos:'MID',max:50},{id:41,name:'Donyell Malen',club:'Aston Villa',pos:'FWD',max:40},{id:42,name:'Marcus Rashford',club:'Aston Villa',pos:'FWD',max:60},{id:43,name:'Diego Carlos',club:'Aston Villa',pos:'DEF',max:20},{id:44,name:'Tyrone Mings',club:'Aston Villa',pos:'DEF',max:20},{id:45,name:'Robin Olsen',club:'Aston Villa',pos:'GK',max:10},{id:46,name:'Clément Lenglet',club:'Aston Villa',pos:'DEF',max:15},{id:47,name:'Kosta Nedeljković',club:'Aston Villa',pos:'DEF',max:20},{id:48,name:'Lamare Bogarde',club:'Aston Villa',pos:'DEF',max:20},{id:49,name:'Lucas Digne',club:'Aston Villa',pos:'DEF',max:20},{id:50,name:'Ross Barkley',club:'Aston Villa',pos:'MID',max:20},
+  {id:51,name:'Neto',club:'Bournemouth',pos:'GK',max:30},{id:52,name:'Evanilson',club:'Bournemouth',pos:'FWD',max:50},{id:53,name:'Antoine Semenyo',club:'Bournemouth',pos:'FWD',max:50},{id:54,name:'Justin Kluivert',club:'Bournemouth',pos:'FWD',max:50},{id:55,name:'Dango Ouattara',club:'Bournemouth',pos:'FWD',max:50},{id:56,name:'Milos Kerkez',club:'Bournemouth',pos:'DEF',max:50},{id:57,name:'Dean Huijsen',club:'Bournemouth',pos:'DEF',max:60},{id:58,name:'Illya Zabarnyi',club:'Bournemouth',pos:'DEF',max:40},{id:59,name:'Alex Scott',club:'Bournemouth',pos:'MID',max:40},{id:60,name:'Marcos Senesi',club:'Bournemouth',pos:'DEF',max:25},{id:61,name:'Ryan Christie',club:'Bournemouth',pos:'MID',max:20},{id:62,name:'Philip Billing',club:'Bournemouth',pos:'MID',max:20},{id:63,name:'Marcus Tavernier',club:'Bournemouth',pos:'MID',max:30},{id:64,name:'Tyler Adams',club:'Bournemouth',pos:'MID',max:30},{id:65,name:'Luis Sinisterra',club:'Bournemouth',pos:'FWD',max:30},{id:66,name:'Enes Ünal',club:'Bournemouth',pos:'FWD',max:20},{id:67,name:'Julian Araujo',club:'Bournemouth',pos:'DEF',max:20},{id:68,name:'David Brooks',club:'Bournemouth',pos:'MID',max:20},{id:69,name:'Kepa Arrizabalaga',club:'Bournemouth',pos:'GK',max:20},{id:70,name:'Adam Smith',club:'Bournemouth',pos:'DEF',max:10},{id:71,name:'Lloyd Kelly',club:'Bournemouth',pos:'DEF',max:30},{id:72,name:'James Hill',club:'Bournemouth',pos:'DEF',max:15},{id:73,name:'Kieffer Moore',club:'Bournemouth',pos:'FWD',max:15},{id:74,name:'Emiliano Marcondes',club:'Bournemouth',pos:'MID',max:10},{id:75,name:'Max Aarons',club:'Bournemouth',pos:'DEF',max:20},
+  {id:76,name:'Mark Flekken',club:'Brentford',pos:'GK',max:30},{id:77,name:'Bryan Mbeumo',club:'Brentford',pos:'FWD',max:120},{id:78,name:'Yoane Wissa',club:'Brentford',pos:'FWD',max:100},{id:79,name:'Nathan Collins',club:'Brentford',pos:'DEF',max:35},{id:80,name:'Sepp van den Berg',club:'Brentford',pos:'DEF',max:30},{id:81,name:'Mikkel Damsgaard',club:'Brentford',pos:'MID',max:40},{id:82,name:'Christian Nørgaard',club:'Brentford',pos:'MID',max:30},{id:83,name:'Fábio Carvalho',club:'Brentford',pos:'MID',max:30},{id:84,name:'Igor Thiago',club:'Brentford',pos:'FWD',max:30},{id:85,name:'Kevin Schade',club:'Brentford',pos:'FWD',max:30},{id:86,name:'Keane Lewis-Potter',club:'Brentford',pos:'FWD',max:30},{id:87,name:'Aaron Hickey',club:'Brentford',pos:'DEF',max:30},{id:88,name:'Kristoffer Ajer',club:'Brentford',pos:'DEF',max:30},{id:89,name:'Vitaly Janelt',club:'Brentford',pos:'MID',max:25},{id:90,name:'Ethan Pinnock',club:'Brentford',pos:'DEF',max:25},{id:91,name:'Ivan Toney',club:'Brentford',pos:'FWD',max:60},{id:92,name:'Rico Henry',club:'Brentford',pos:'DEF',max:30},{id:93,name:'Mathias Jørgensen',club:'Brentford',pos:'DEF',max:20},{id:94,name:'Ben Mee',club:'Brentford',pos:'DEF',max:10},{id:95,name:'Pontus Jansson',club:'Brentford',pos:'DEF',max:20},{id:96,name:'Josh Dasilva',club:'Brentford',pos:'MID',max:20},{id:97,name:'Frank Onyeka',club:'Brentford',pos:'MID',max:20},{id:98,name:'Mads Roerslev',club:'Brentford',pos:'DEF',max:15},{id:99,name:'Kim Ji-soo',club:'Brentford',pos:'DEF',max:15},{id:100,name:'Mathias Berg',club:'Brentford',pos:'MID',max:20},
+  {id:101,name:'Bart Verbruggen',club:'Brighton',pos:'GK',max:40},{id:102,name:'Kaoru Mitoma',club:'Brighton',pos:'FWD',max:80},{id:103,name:'João Pedro',club:'Brighton',pos:'FWD',max:60},{id:104,name:'Evan Ferguson',club:'Brighton',pos:'FWD',max:60},{id:105,name:'Georginio Rutter',club:'Brighton',pos:'FWD',max:50},{id:106,name:'Matt O\'Riley',club:'Brighton',pos:'MID',max:50},{id:107,name:'Pervis Estupiñán',club:'Brighton',pos:'DEF',max:40},{id:108,name:'Jan Paul van Hecke',club:'Brighton',pos:'DEF',max:40},{id:109,name:'Facundo Buonanotte',club:'Brighton',pos:'MID',max:40},{id:110,name:'Simon Adingra',club:'Brighton',pos:'FWD',max:40},{id:111,name:'Ibrahim Osman',club:'Brighton',pos:'FWD',max:30},{id:112,name:'Jack Hinshelwood',club:'Brighton',pos:'MID',max:25},{id:113,name:'Yasin Ayari',club:'Brighton',pos:'MID',max:25},{id:114,name:'Diego Gómez',club:'Brighton',pos:'MID',max:20},{id:115,name:'Tariq Lamptey',club:'Brighton',pos:'DEF',max:25},{id:116,name:'Solly March',club:'Brighton',pos:'FWD',max:40},{id:117,name:'Lewis Dunk',club:'Brighton',pos:'DEF',max:30},{id:118,name:'Adam Webster',club:'Brighton',pos:'DEF',max:20},{id:119,name:'Joel Veltman',club:'Brighton',pos:'DEF',max:15},{id:120,name:'Pascal Groß',club:'Brighton',pos:'MID',max:20},{id:121,name:'Danny Welbeck',club:'Brighton',pos:'FWD',max:15},{id:122,name:'James Milner',club:'Brighton',pos:'MID',max:5},{id:123,name:'Moisés Caicedo',club:'Brighton',pos:'MID',max:100},{id:124,name:'Alexis Mac Allister',club:'Brighton',pos:'MID',max:80},{id:125,name:'Adam Lallana',club:'Brighton',pos:'MID',max:5},
+  {id:126,name:'Cole Palmer',club:'Chelsea',pos:'MID',max:200},{id:127,name:'Levi Colwill',club:'Chelsea',pos:'DEF',max:70},{id:128,name:'Nicolas Jackson',club:'Chelsea',pos:'FWD',max:100},{id:129,name:'Pedro Neto',club:'Chelsea',pos:'FWD',max:80},{id:130,name:'Wesley Fofana',club:'Chelsea',pos:'DEF',max:60},{id:131,name:'Malo Gusto',club:'Chelsea',pos:'DEF',max:50},{id:132,name:'Romeo Lavia',club:'Chelsea',pos:'MID',max:60},{id:133,name:'Enzo Fernández',club:'Chelsea',pos:'MID',max:80},{id:134,name:'Christopher Nkunku',club:'Chelsea',pos:'FWD',max:80},{id:135,name:'Noni Madueke',club:'Chelsea',pos:'FWD',max:70},{id:136,name:'Reece James',club:'Chelsea',pos:'DEF',max:60},{id:137,name:'Marc Cucurella',club:'Chelsea',pos:'DEF',max:40},{id:138,name:'Mykhailo Mudryk',club:'Chelsea',pos:'FWD',max:50},{id:139,name:'Kiernan Dewsbury-Hall',club:'Chelsea',pos:'MID',max:40},{id:140,name:'Axel Disasi',club:'Chelsea',pos:'DEF',max:40},{id:141,name:'Jadon Sancho',club:'Chelsea',pos:'FWD',max:40},{id:142,name:'Benoît Badiashile',club:'Chelsea',pos:'DEF',max:35},{id:143,name:'Robert Sánchez',club:'Chelsea',pos:'GK',max:30},{id:144,name:'Tosin Adarabioyo',club:'Chelsea',pos:'DEF',max:30},{id:145,name:'Carney Chukwuemeka',club:'Chelsea',pos:'MID',max:30},{id:146,name:'Ben Chilwell',club:'Chelsea',pos:'DEF',max:30},{id:147,name:'Filip Jørgensen',club:'Chelsea',pos:'GK',max:30},{id:148,name:'Thiago Silva',club:'Chelsea',pos:'DEF',max:10},{id:149,name:'Raheem Sterling',club:'Chelsea',pos:'FWD',max:40},{id:150,name:'Moisés Caicedo',club:'Chelsea',pos:'MID',max:100},
+  {id:151,name:'Dean Henderson',club:'Crystal Palace',pos:'GK',max:30},{id:152,name:'Marc Guéhi',club:'Crystal Palace',pos:'DEF',max:60},{id:153,name:'Eberechi Eze',club:'Crystal Palace',pos:'MID',max:80},{id:154,name:'Joachim Andersen',club:'Crystal Palace',pos:'DEF',max:40},{id:155,name:'Jean-Philippe Mateta',club:'Crystal Palace',pos:'FWD',max:50},{id:156,name:'Adam Wharton',club:'Crystal Palace',pos:'MID',max:50},{id:157,name:'Ismaïla Sarr',club:'Crystal Palace',pos:'FWD',max:30},{id:158,name:'Daniel Muñoz',club:'Crystal Palace',pos:'DEF',max:30},{id:159,name:'Cheick Doucouré',club:'Crystal Palace',pos:'MID',max:40},{id:160,name:'Maxence Lacroix',club:'Crystal Palace',pos:'DEF',max:30},{id:161,name:'Tyrick Mitchell',club:'Crystal Palace',pos:'DEF',max:30},{id:162,name:'Trevoh Chalobah',club:'Crystal Palace',pos:'DEF',max:30},{id:163,name:'Michael Olise',club:'Crystal Palace',pos:'FWD',max:80},{id:164,name:'Daichi Kamada',club:'Crystal Palace',pos:'MID',max:25},{id:165,name:'Eddie Nketiah',club:'Crystal Palace',pos:'FWD',max:30},{id:166,name:'Odsonne Édouard',club:'Crystal Palace',pos:'FWD',max:20},{id:167,name:'Romain Esse',club:'Crystal Palace',pos:'MID',max:20},{id:168,name:'Joel Ward',club:'Crystal Palace',pos:'DEF',max:10},{id:169,name:'Jeffrey Schlupp',club:'Crystal Palace',pos:'MID',max:10},{id:170,name:'Will Hughes',club:'Crystal Palace',pos:'MID',max:15},{id:171,name:'Nathaniel Clyne',club:'Crystal Palace',pos:'DEF',max:10},{id:172,name:'Jordan Ayew',club:'Crystal Palace',pos:'FWD',max:15},{id:173,name:'Jadan Raymond',club:'Crystal Palace',pos:'MID',max:15},{id:174,name:'Franco Umeh',club:'Crystal Palace',pos:'FWD',max:15},{id:175,name:'Nathaniel Mendez-Laing',club:'Crystal Palace',pos:'FWD',max:10},
+  {id:176,name:'Jordan Pickford',club:'Everton',pos:'GK',max:40},{id:177,name:'Jarrad Branthwaite',club:'Everton',pos:'DEF',max:60},{id:178,name:'Iliman Ndiaye',club:'Everton',pos:'FWD',max:40},{id:179,name:'Dwight McNeil',club:'Everton',pos:'FWD',max:30},{id:180,name:'Dominic Calvert-Lewin',club:'Everton',pos:'FWD',max:30},{id:181,name:'James Tarkowski',club:'Everton',pos:'DEF',max:20},{id:182,name:'Vitaliy Mykolenko',club:'Everton',pos:'DEF',max:20},{id:183,name:'Jesper Lindström',club:'Everton',pos:'FWD',max:25},{id:184,name:'Tim Iroegbunam',club:'Everton',pos:'MID',max:20},{id:185,name:'Jake O\'Brien',club:'Everton',pos:'DEF',max:25},{id:186,name:'James Garner',club:'Everton',pos:'MID',max:20},{id:187,name:'Orel Mangala',club:'Everton',pos:'MID',max:20},{id:188,name:'Nathan Patterson',club:'Everton',pos:'DEF',max:15},{id:189,name:'Abdoulaye Doucouré',club:'Everton',pos:'MID',max:15},{id:190,name:'Michael Keane',club:'Everton',pos:'DEF',max:10},{id:191,name:'Idrissa Gueye',club:'Everton',pos:'MID',max:10},{id:192,name:'Beto',club:'Everton',pos:'FWD',max:20},{id:193,name:'Jack Harrison',club:'Everton',pos:'FWD',max:20},{id:194,name:'Ben Godfrey',club:'Everton',pos:'DEF',max:15},{id:195,name:'André Gomes',club:'Everton',pos:'MID',max:10},{id:196,name:'Séamus Coleman',club:'Everton',pos:'DEF',max:5},{id:197,name:'Ashley Young',club:'Everton',pos:'DEF',max:5},{id:198,name:'Demarai Gray',club:'Everton',pos:'FWD',max:15},{id:199,name:'João Virgínia',club:'Everton',pos:'GK',max:10},{id:200,name:'Isaac Price',club:'Everton',pos:'MID',max:15},
+  {id:201,name:'Bernd Leno',club:'Fulham',pos:'GK',max:20},{id:202,name:'Andreas Pereira',club:'Fulham',pos:'MID',max:40},{id:203,name:'Antonee Robinson',club:'Fulham',pos:'DEF',max:40},{id:204,name:'Rodrigo Muniz',club:'Fulham',pos:'FWD',max:40},{id:205,name:'Alex Iwobi',club:'Fulham',pos:'MID',max:30},{id:206,name:'João Palhinha',club:'Fulham',pos:'MID',max:50},{id:207,name:'Emile Smith Rowe',club:'Fulham',pos:'MID',max:40},{id:208,name:'Calvin Bassey',club:'Fulham',pos:'DEF',max:25},{id:209,name:'Tosin Adarabioyo',club:'Fulham',pos:'DEF',max:30},{id:210,name:'Joachim Andersen',club:'Fulham',pos:'DEF',max:35},{id:211,name:'Kenny Tete',club:'Fulham',pos:'DEF',max:15},{id:212,name:'Tom Cairney',club:'Fulham',pos:'MID',max:15},{id:213,name:'Harrison Reed',club:'Fulham',pos:'MID',max:20},{id:214,name:'Harry Wilson',club:'Fulham',pos:'MID',max:20},{id:215,name:'Sasa Lukic',club:'Fulham',pos:'MID',max:20},{id:216,name:'Manor Solomon',club:'Fulham',pos:'FWD',max:20},{id:217,name:'Adama Traoré',club:'Fulham',pos:'FWD',max:20},{id:218,name:'Tim Ream',club:'Fulham',pos:'DEF',max:10},{id:219,name:'Raúl Jiménez',club:'Fulham',pos:'FWD',max:20},{id:220,name:'Aleksandar Mitrović',club:'Fulham',pos:'FWD',max:30},{id:221,name:'Ryan Sessegnon',club:'Fulham',pos:'DEF',max:15},{id:222,name:'Reiss Nelson',club:'Fulham',pos:'FWD',max:20},{id:223,name:'Issa Diop',club:'Fulham',pos:'DEF',max:20},{id:224,name:'Willian',club:'Fulham',pos:'FWD',max:10},{id:225,name:'Jorge Cuenca',club:'Fulham',pos:'DEF',max:15},
+  {id:226,name:'Liam Delap',club:'Ipswich',pos:'FWD',max:50},{id:227,name:'Omari Hutchinson',club:'Ipswich',pos:'FWD',max:40},{id:228,name:'Leif Davis',club:'Ipswich',pos:'DEF',max:25},{id:229,name:'Sammie Szmodics',club:'Ipswich',pos:'FWD',max:25},{id:230,name:'Julio Enciso',club:'Ipswich',pos:'FWD',max:25},{id:231,name:'Jens Cajuste',club:'Ipswich',pos:'MID',max:20},{id:232,name:'Dara O\'Shea',club:'Ipswich',pos:'DEF',max:20},{id:233,name:'Jacob Greaves',club:'Ipswich',pos:'DEF',max:20},{id:234,name:'Ben Johnson',club:'Ipswich',pos:'DEF',max:20},{id:235,name:'Kalvin Phillips',club:'Ipswich',pos:'MID',max:20},{id:236,name:'Luke Woolfenden',club:'Ipswich',pos:'DEF',max:15},{id:237,name:'Nathan Broadhead',club:'Ipswich',pos:'FWD',max:15},{id:238,name:'Ali Al-Hamadi',club:'Ipswich',pos:'FWD',max:15},{id:239,name:'George Hirst',club:'Ipswich',pos:'FWD',max:15},{id:240,name:'Harry Clarke',club:'Ipswich',pos:'DEF',max:15},{id:241,name:'Jack Taylor',club:'Ipswich',pos:'MID',max:15},{id:242,name:'Marcus Harness',club:'Ipswich',pos:'MID',max:10},{id:243,name:'Sam Morsy',club:'Ipswich',pos:'MID',max:10},{id:244,name:'Wes Burns',club:'Ipswich',pos:'FWD',max:15},{id:245,name:'Arijanet Muric',club:'Ipswich',pos:'GK',max:15},{id:246,name:'Cameron Burgess',club:'Ipswich',pos:'DEF',max:10},{id:247,name:'Massimo Luongo',club:'Ipswich',pos:'MID',max:10},{id:248,name:'Christian Walton',club:'Ipswich',pos:'GK',max:10},{id:249,name:'Axel Tuanzebe',club:'Ipswich',pos:'DEF',max:10},{id:250,name:'Conor Chaplin',club:'Ipswich',pos:'MID',max:15},
+  {id:251,name:'Mads Hermansen',club:'Leicester',pos:'GK',max:25},{id:252,name:'Abdul Fatawu',club:'Leicester',pos:'FWD',max:35},{id:253,name:'Bilal El Khannouss',club:'Leicester',pos:'MID',max:35},{id:254,name:'Patson Daka',club:'Leicester',pos:'FWD',max:30},{id:255,name:'Stephy Mavididi',club:'Leicester',pos:'FWD',max:25},{id:256,name:'Wout Faes',club:'Leicester',pos:'DEF',max:25},{id:257,name:'Victor Kristiansen',club:'Leicester',pos:'DEF',max:25},{id:258,name:'Caleb Okoli',club:'Leicester',pos:'DEF',max:25},{id:259,name:'James Justin',club:'Leicester',pos:'DEF',max:25},{id:260,name:'Oliver Skipp',club:'Leicester',pos:'MID',max:20},{id:261,name:'Ricardo Pereira',club:'Leicester',pos:'DEF',max:20},{id:262,name:'Harvey Barnes',club:'Leicester',pos:'FWD',max:40},{id:263,name:'Tom Cannon',club:'Leicester',pos:'FWD',max:20},{id:264,name:'Harry Winks',club:'Leicester',pos:'MID',max:15},{id:265,name:'Jannik Vestergaard',club:'Leicester',pos:'DEF',max:15},{id:266,name:'Wilfred Ndidi',club:'Leicester',pos:'MID',max:20},{id:267,name:'Luke Thomas',club:'Leicester',pos:'DEF',max:20},{id:268,name:'Bobby De Cordova-Reid',club:'Leicester',pos:'FWD',max:20},{id:269,name:'Danny Ward',club:'Leicester',pos:'GK',max:10},{id:270,name:'Conor Coady',club:'Leicester',pos:'DEF',max:10},{id:271,name:'Hamza Choudhury',club:'Leicester',pos:'MID',max:10},{id:272,name:'Marc Albrighton',club:'Leicester',pos:'MID',max:5},{id:273,name:'Jamie Vardy',club:'Leicester',pos:'FWD',max:10},{id:274,name:'Kiernan Dewsbury-Hall',club:'Leicester',pos:'MID',max:30},{id:275,name:'Kelechi Iheanacho',club:'Leicester',pos:'FWD',max:15},
+  {id:276,name:'Alisson Becker',club:'Liverpool',pos:'GK',max:80},{id:277,name:'Mohamed Salah',club:'Liverpool',pos:'FWD',max:180},{id:278,name:'Virgil van Dijk',club:'Liverpool',pos:'DEF',max:120},{id:279,name:'Trent Alexander-Arnold',club:'Liverpool',pos:'DEF',max:150},{id:280,name:'Alexis Mac Allister',club:'Liverpool',pos:'MID',max:100},{id:281,name:'Ryan Gravenberch',club:'Liverpool',pos:'MID',max:80},{id:282,name:'Dominik Szoboszlai',club:'Liverpool',pos:'MID',max:80},{id:283,name:'Luis Díaz',club:'Liverpool',pos:'FWD',max:100},{id:284,name:'Cody Gakpo',club:'Liverpool',pos:'FWD',max:80},{id:285,name:'Darwin Núñez',club:'Liverpool',pos:'FWD',max:80},{id:286,name:'Diogo Jota',club:'Liverpool',pos:'FWD',max:80},{id:287,name:'Ibrahima Konaté',club:'Liverpool',pos:'DEF',max:80},{id:288,name:'Conor Bradley',club:'Liverpool',pos:'DEF',max:60},{id:289,name:'Andrew Robertson',club:'Liverpool',pos:'DEF',max:60},{id:290,name:'Curtis Jones',club:'Liverpool',pos:'MID',max:50},{id:291,name:'Harvey Elliott',club:'Liverpool',pos:'MID',max:50},{id:292,name:'Ben Doak',club:'Liverpool',pos:'FWD',max:40},{id:293,name:'Wataru Endo',club:'Liverpool',pos:'MID',max:40},{id:294,name:'Joe Gomez',club:'Liverpool',pos:'DEF',max:40},{id:295,name:'Jarell Quansah',club:'Liverpool',pos:'DEF',max:40},{id:296,name:'Federico Chiesa',club:'Liverpool',pos:'FWD',max:40},{id:297,name:'Caoimhín Kelleher',club:'Liverpool',pos:'GK',max:30},{id:298,name:'Kostas Tsimikas',club:'Liverpool',pos:'DEF',max:30},{id:299,name:'Stefan Bajčetić',club:'Liverpool',pos:'MID',max:25},{id:300,name:'Tyler Morton',club:'Liverpool',pos:'MID',max:20},
+  {id:301,name:'Ederson',club:'Man City',pos:'GK',max:60},{id:302,name:'Erling Haaland',club:'Man City',pos:'FWD',max:250},{id:303,name:'Phil Foden',club:'Man City',pos:'MID',max:200},{id:304,name:'Bernardo Silva',club:'Man City',pos:'MID',max:120},{id:305,name:'Rúben Dias',club:'Man City',pos:'DEF',max:100},{id:306,name:'Joško Gvardiol',club:'Man City',pos:'DEF',max:100},{id:307,name:'Rodri',club:'Man City',pos:'MID',max:180},{id:308,name:'Kevin De Bruyne',club:'Man City',pos:'MID',max:100},{id:309,name:'Jeremy Doku',club:'Man City',pos:'FWD',max:80},{id:310,name:'Savinho',club:'Man City',pos:'FWD',max:60},{id:311,name:'Matheus Nunes',club:'Man City',pos:'MID',max:60},{id:312,name:'Rico Lewis',club:'Man City',pos:'DEF',max:60},{id:313,name:'John Stones',club:'Man City',pos:'DEF',max:60},{id:314,name:'Manuel Akanji',club:'Man City',pos:'DEF',max:60},{id:315,name:'Jack Grealish',club:'Man City',pos:'FWD',max:60},{id:316,name:'Nathan Aké',club:'Man City',pos:'DEF',max:50},{id:317,name:'Oscar Bobb',club:'Man City',pos:'FWD',max:40},{id:318,name:'İlkay Gündoğan',club:'Man City',pos:'MID',max:40},{id:319,name:'Mateo Kovačić',club:'Man City',pos:'MID',max:40},{id:320,name:'Claudio Echeverri',club:'Man City',pos:'MID',max:40},{id:321,name:'Kyle Walker',club:'Man City',pos:'DEF',max:40},{id:322,name:'Stefan Ortega',club:'Man City',pos:'GK',max:20},{id:323,name:'James McAtee',club:'Man City',pos:'MID',max:25},{id:324,name:'Divin Mubama',club:'Man City',pos:'FWD',max:20},{id:325,name:'Kalvin Phillips',club:'Man City',pos:'MID',max:20},
+  {id:326,name:'Bruno Fernandes',club:'Man United',pos:'MID',max:80},{id:327,name:'Kobbie Mainoo',club:'Man United',pos:'MID',max:80},{id:328,name:'Alejandro Garnacho',club:'Man United',pos:'FWD',max:100},{id:329,name:'Amad Diallo',club:'Man United',pos:'FWD',max:80},{id:330,name:'Rasmus Højlund',club:'Man United',pos:'FWD',max:80},{id:331,name:'Lisandro Martínez',club:'Man United',pos:'DEF',max:60},{id:332,name:'Marcus Rashford',club:'Man United',pos:'FWD',max:60},{id:333,name:'Diogo Dalot',club:'Man United',pos:'DEF',max:50},{id:334,name:'Matthijs de Ligt',club:'Man United',pos:'DEF',max:50},{id:335,name:'André Onana',club:'Man United',pos:'GK',max:50},{id:336,name:'Noussair Mazraoui',club:'Man United',pos:'DEF',max:40},{id:337,name:'Scott McTominay',club:'Man United',pos:'MID',max:40},{id:338,name:'Mason Mount',club:'Man United',pos:'MID',max:30},{id:339,name:'Aaron Wan-Bissaka',club:'Man United',pos:'DEF',max:30},{id:340,name:'Luke Shaw',club:'Man United',pos:'DEF',max:30},{id:341,name:'Antony',club:'Man United',pos:'FWD',max:30},{id:342,name:'Harry Maguire',club:'Man United',pos:'DEF',max:20},{id:343,name:'Casemiro',club:'Man United',pos:'MID',max:20},{id:344,name:'Victor Lindelöf',club:'Man United',pos:'DEF',max:20},{id:345,name:'Christian Eriksen',club:'Man United',pos:'MID',max:20},{id:346,name:'Tyrell Malacia',club:'Man United',pos:'DEF',max:20},{id:347,name:'Toby Collyer',club:'Man United',pos:'MID',max:15},{id:348,name:'Altay Bayındır',club:'Man United',pos:'GK',max:15},{id:349,name:'Jonny Evans',club:'Man United',pos:'DEF',max:10},{id:350,name:'Tom Heaton',club:'Man United',pos:'GK',max:5},
+  {id:351,name:'Nick Pope',club:'Newcastle',pos:'GK',max:60},{id:352,name:'Alexander Isak',club:'Newcastle',pos:'FWD',max:150},{id:353,name:'Bruno Guimarães',club:'Newcastle',pos:'MID',max:100},{id:354,name:'Anthony Gordon',club:'Newcastle',pos:'FWD',max:80},{id:355,name:'Sven Botman',club:'Newcastle',pos:'DEF',max:50},{id:356,name:'Tino Livramento',club:'Newcastle',pos:'DEF',max:50},{id:357,name:'Kieran Trippier',club:'Newcastle',pos:'DEF',max:40},{id:358,name:'Harvey Barnes',club:'Newcastle',pos:'FWD',max:40},{id:359,name:'Joelinton',club:'Newcastle',pos:'MID',max:40},{id:360,name:'Lewis Hall',club:'Newcastle',pos:'DEF',max:30},{id:361,name:'Lloyd Kelly',club:'Newcastle',pos:'DEF',max:25},{id:362,name:'Elliot Anderson',club:'Newcastle',pos:'MID',max:30},{id:363,name:'William Osula',club:'Newcastle',pos:'FWD',max:20},{id:364,name:'Jacob Murphy',club:'Newcastle',pos:'FWD',max:20},{id:365,name:'Sean Longstaff',club:'Newcastle',pos:'MID',max:20},{id:366,name:'Fabian Schär',club:'Newcastle',pos:'DEF',max:20},{id:367,name:'Dan Burn',club:'Newcastle',pos:'DEF',max:20},{id:368,name:'Joe Willock',club:'Newcastle',pos:'MID',max:25},{id:369,name:'Miguel Almirón',club:'Newcastle',pos:'MID',max:30},{id:370,name:'Callum Wilson',club:'Newcastle',pos:'FWD',max:20},{id:371,name:'Martin Dúbravka',club:'Newcastle',pos:'GK',max:15},{id:372,name:'Matt Targett',club:'Newcastle',pos:'DEF',max:15},{id:373,name:'Jamaal Lascelles',club:'Newcastle',pos:'DEF',max:10},{id:374,name:'Odysseas Vlachodimos',club:'Newcastle',pos:'GK',max:10},{id:375,name:'Matt Ritchie',club:'Newcastle',pos:'MID',max:5},
+  {id:376,name:'Matz Sels',club:'Nottm Forest',pos:'GK',max:25},{id:377,name:'Morgan Gibbs-White',club:'Nottm Forest',pos:'MID',max:60},{id:378,name:'Brennan Johnson',club:'Nottm Forest',pos:'FWD',max:60},{id:379,name:'Anthony Elanga',club:'Nottm Forest',pos:'FWD',max:50},{id:380,name:'Ibrahim Sangaré',club:'Nottm Forest',pos:'MID',max:40},{id:381,name:'Taiwo Awoniyi',club:'Nottm Forest',pos:'FWD',max:40},{id:382,name:'Callum Hudson-Odoi',club:'Nottm Forest',pos:'FWD',max:30},{id:383,name:'Chris Wood',club:'Nottm Forest',pos:'FWD',max:30},{id:384,name:'Nikola Milenković',club:'Nottm Forest',pos:'DEF',max:30},{id:385,name:'Gio Reyna',club:'Nottm Forest',pos:'MID',max:30},{id:386,name:'Neco Williams',club:'Nottm Forest',pos:'DEF',max:30},{id:387,name:'Danilo',club:'Nottm Forest',pos:'MID',max:25},{id:388,name:'Andrew Omobamidele',club:'Nottm Forest',pos:'DEF',max:20},{id:389,name:'Moussa Niakhaté',club:'Nottm Forest',pos:'DEF',max:25},{id:390,name:'Ryan Yates',club:'Nottm Forest',pos:'MID',max:20},{id:391,name:'Nicolás Domínguez',club:'Nottm Forest',pos:'MID',max:20},{id:392,name:'Willy Boly',club:'Nottm Forest',pos:'DEF',max:15},{id:393,name:'Felipe',club:'Nottm Forest',pos:'DEF',max:20},{id:394,name:'Elliot Anderson',club:'Nottm Forest',pos:'MID',max:25},{id:395,name:'Joe Worrall',club:'Nottm Forest',pos:'DEF',max:15},{id:396,name:'Harry Toffolo',club:'Nottm Forest',pos:'DEF',max:15},{id:397,name:'Steve Cook',club:'Nottm Forest',pos:'DEF',max:10},{id:398,name:'Orel Mangala',club:'Nottm Forest',pos:'MID',max:20},{id:399,name:'Matt Turner',club:'Nottm Forest',pos:'GK',max:10},{id:400,name:'Omar Richards',club:'Nottm Forest',pos:'DEF',max:15},
+  {id:401,name:'Aaron Ramsdale',club:'Southampton',pos:'GK',max:20},{id:402,name:'Kyle Walker-Peters',club:'Southampton',pos:'DEF',max:25},{id:403,name:'Mateus Fernandes',club:'Southampton',pos:'MID',max:25},{id:404,name:'Taylor Harwood-Bellis',club:'Southampton',pos:'DEF',max:25},{id:405,name:'Cameron Archer',club:'Southampton',pos:'FWD',max:25},{id:406,name:'Yukinari Sugawara',club:'Southampton',pos:'DEF',max:20},{id:407,name:'Flynn Downes',club:'Southampton',pos:'MID',max:20},{id:408,name:'Samuel Edozie',club:'Southampton',pos:'FWD',max:20},{id:409,name:'Jan Bednarek',club:'Southampton',pos:'DEF',max:15},{id:410,name:'Romain Perraud',club:'Southampton',pos:'DEF',max:15},{id:411,name:'Adam Armstrong',club:'Southampton',pos:'FWD',max:20},{id:412,name:'Che Adams',club:'Southampton',pos:'FWD',max:20},{id:413,name:'Nathan Tella',club:'Southampton',pos:'FWD',max:15},{id:414,name:'Joe Aribo',club:'Southampton',pos:'MID',max:20},{id:415,name:'Stuart Armstrong',club:'Southampton',pos:'MID',max:10},{id:416,name:'Ryan Manning',club:'Southampton',pos:'DEF',max:10},{id:417,name:'James Ward-Prowse',club:'Southampton',pos:'MID',max:30},{id:418,name:'Jack Stephens',club:'Southampton',pos:'DEF',max:10},{id:419,name:'Gavin Bazunu',club:'Southampton',pos:'GK',max:20},{id:420,name:'Paul Onuachu',club:'Southampton',pos:'FWD',max:15},{id:421,name:'Sekou Mara',club:'Southampton',pos:'FWD',max:15},{id:422,name:'Moussa Djenepo',club:'Southampton',pos:'FWD',max:10},{id:423,name:'Ben Brereton Díaz',club:'Southampton',pos:'FWD',max:15},{id:424,name:'Romeo Lavia',club:'Southampton',pos:'MID',max:50},{id:425,name:'Joe Lumley',club:'Southampton',pos:'GK',max:5},
+  {id:426,name:'Guglielmo Vicario',club:'Spurs',pos:'GK',max:40},{id:427,name:'Cristian Romero',club:'Spurs',pos:'DEF',max:80},{id:428,name:'Micky van de Ven',club:'Spurs',pos:'DEF',max:80},{id:429,name:'James Maddison',club:'Spurs',pos:'MID',max:80},{id:430,name:'Son Heung-min',club:'Spurs',pos:'FWD',max:80},{id:431,name:'Destiny Udogie',club:'Spurs',pos:'DEF',max:60},{id:432,name:'Dejan Kulusevski',club:'Spurs',pos:'MID',max:70},{id:433,name:'Pape Matar Sarr',club:'Spurs',pos:'MID',max:60},{id:434,name:'Dominic Solanke',club:'Spurs',pos:'FWD',max:60},{id:435,name:'Brennan Johnson',club:'Spurs',pos:'FWD',max:60},{id:436,name:'Pedro Porro',club:'Spurs',pos:'DEF',max:50},{id:437,name:'Richarlison',club:'Spurs',pos:'FWD',max:40},{id:438,name:'Rodrigo Bentancur',club:'Spurs',pos:'MID',max:40},{id:439,name:'Archie Gray',club:'Spurs',pos:'MID',max:40},{id:440,name:'Wilson Odobert',club:'Spurs',pos:'FWD',max:40},{id:441,name:'Lucas Bergvall',club:'Spurs',pos:'MID',max:40},{id:442,name:'Yves Bissouma',club:'Spurs',pos:'MID',max:40},{id:443,name:'Ashley Phillips',club:'Spurs',pos:'DEF',max:15},{id:444,name:'Ben Davies',club:'Spurs',pos:'DEF',max:20},{id:445,name:'Emerson Royal',club:'Spurs',pos:'DEF',max:20},{id:446,name:'Oliver Skipp',club:'Spurs',pos:'MID',max:25},{id:447,name:'Manor Solomon',club:'Spurs',pos:'FWD',max:20},{id:448,name:'Fraser Forster',club:'Spurs',pos:'GK',max:10},{id:449,name:'Eric Dier',club:'Spurs',pos:'DEF',max:15},{id:450,name:'Alfie Whiteman',club:'Spurs',pos:'GK',max:5},
+  {id:451,name:'Jarrod Bowen',club:'West Ham',pos:'FWD',max:80},{id:452,name:'Mohammed Kudus',club:'West Ham',pos:'FWD',max:60},{id:453,name:'Lucas Paquetá',club:'West Ham',pos:'MID',max:60},{id:454,name:'Crysencio Summerville',club:'West Ham',pos:'FWD',max:50},{id:455,name:'Max Kilman',club:'West Ham',pos:'DEF',max:40},{id:456,name:'Jean-Clair Todibo',club:'West Ham',pos:'DEF',max:40},{id:457,name:'Edson Álvarez',club:'West Ham',pos:'MID',max:40},{id:458,name:'Niclas Füllkrug',club:'West Ham',pos:'FWD',max:40},{id:459,name:'Gianluca Scamacca',club:'West Ham',pos:'FWD',max:40},{id:460,name:'Tomáš Souček',club:'West Ham',pos:'MID',max:30},{id:461,name:'Konstantinos Mavropanos',club:'West Ham',pos:'DEF',max:20},{id:462,name:'Said Benrahma',club:'West Ham',pos:'MID',max:30},{id:463,name:'James Ward-Prowse',club:'West Ham',pos:'MID',max:25},{id:464,name:'Kurt Zouma',club:'West Ham',pos:'DEF',max:20},{id:465,name:'Nayef Aguerd',club:'West Ham',pos:'DEF',max:25},{id:466,name:'Guido Rodríguez',club:'West Ham',pos:'MID',max:20},{id:467,name:'Alphonse Areola',club:'West Ham',pos:'GK',max:15},{id:468,name:'Vladimír Coufal',club:'West Ham',pos:'DEF',max:15},{id:469,name:'Aaron Cresswell',club:'West Ham',pos:'DEF',max:10},{id:470,name:'Danny Ings',club:'West Ham',pos:'FWD',max:15},{id:471,name:'Michail Antonio',club:'West Ham',pos:'FWD',max:15},{id:472,name:'Declan Rice',club:'West Ham',pos:'MID',max:100},{id:473,name:'Ben Johnson',club:'West Ham',pos:'DEF',max:20},{id:474,name:'Lukasz Fabianski',club:'West Ham',pos:'GK',max:5},{id:475,name:'Pablo Fornals',club:'West Ham',pos:'MID',max:20},
+  {id:476,name:'José Sá',club:'Wolves',pos:'GK',max:30},{id:477,name:'Matheus Cunha',club:'Wolves',pos:'FWD',max:80},{id:478,name:'Rayan Aït-Nouri',club:'Wolves',pos:'DEF',max:50},{id:479,name:'João Gomes',club:'Wolves',pos:'MID',max:40},{id:480,name:'Pedro Neto',club:'Wolves',pos:'FWD',max:60},{id:481,name:'Hwang Hee-chan',club:'Wolves',pos:'FWD',max:40},{id:482,name:'Nelson Semedo',club:'Wolves',pos:'DEF',max:25},{id:483,name:'Max Kilman',club:'Wolves',pos:'DEF',max:40},{id:484,name:'Pablo Sarabia',club:'Wolves',pos:'MID',max:20},{id:485,name:'Rúben Neves',club:'Wolves',pos:'MID',max:40},{id:486,name:'Matheus Nunes',club:'Wolves',pos:'MID',max:50},{id:487,name:'Tommy Doyle',club:'Wolves',pos:'MID',max:20},{id:488,name:'Boubacar Traoré',club:'Wolves',pos:'MID',max:20},{id:489,name:'Santiago Bueno',club:'Wolves',pos:'DEF',max:20},{id:490,name:'Emmanuel Agbadou',club:'Wolves',pos:'DEF',max:25},{id:491,name:'Toti Gomes',club:'Wolves',pos:'DEF',max:20},{id:492,name:'Daniel Podence',club:'Wolves',pos:'FWD',max:20},{id:493,name:'Sasa Kalajdzic',club:'Wolves',pos:'FWD',max:20},{id:494,name:'Matt Doherty',club:'Wolves',pos:'DEF',max:15},{id:495,name:'Luke Cundle',club:'Wolves',pos:'MID',max:15},{id:496,name:'Enso González',club:'Wolves',pos:'MID',max:15},{id:497,name:'Bastien Meupiyou',club:'Wolves',pos:'DEF',max:15},{id:498,name:'Joe Hodge',club:'Wolves',pos:'MID',max:15},{id:499,name:'Conor Coady',club:'Wolves',pos:'DEF',max:10},{id:500,name:'Charlie Doher',club:'Wolves',pos:'MID',max:10},
+];
+
+const natMap={
+  1:'ENG',2:'ENG',3:'NOR',4:'ENG',5:'BRA',6:'FRA',7:'GER',8:'BEL',9:'BRA',10:'ENG',
+  11:'NED',12:'GHA',13:'UKR',14:'POL',15:'ENG',16:'ENG',17:'ITA',18:'ENG',19:'ENG',20:'ENG',
+  21:'JPN',22:'POR',23:'SCO',24:'ENG',25:'POR',
+  26:'ARG',27:'ENG',28:'JAM',29:'ENG',30:'ESP',31:'ENG',32:'POL',33:'SCO',34:'FRA',35:'BEL',
+  36:'BEL',37:'FRA',38:'COL',39:'NED',40:'ENG',41:'NED',42:'ENG',43:'BRA',44:'ENG',45:'SWE',
+  46:'FRA',47:'SRB',48:'BRA',49:'FRA',50:'ENG',
+  51:'POR',52:'BRA',53:'BFA',54:'NED',55:'BFA',56:'BRA',57:'ARG',58:'SCO',59:'USA',60:'SEN',
+  61:'GHA',62:'NED',63:'USA',64:'HUN',65:'TUR',66:'UKR',67:'ENG',68:'ESP',69:'BRA',70:'MEX',
+  71:'ENG',72:'ESP',73:'COL',74:'WAL',75:'DEN',
+  76:'GER',77:'CMR',78:'COD',79:'IRL',80:'NED',81:'DEN',82:'FRA',83:'ENG',84:'DEN',85:'DEN',
+  86:'GER',87:'DEN',88:'ENG',89:'ENG',90:'ENG',91:'ENG',92:'GER',93:'SCO',94:'ENG',95:'BRA',
+  96:'NED',97:'IRL',98:'KOR',99:'DEN',100:'POR',
+  101:'NED',102:'JPN',103:'BRA',104:'IRL',105:'DEN',106:'NED',107:'GHA',108:'ENG',109:'ECU',110:'ARG',
+  111:'BRA',112:'ENG',113:'IRL',114:'DEN',115:'BRA',116:'ARG',117:'CIV',118:'SWE',119:'ENG',120:'ENG',
+  121:'ENG',122:'GER',123:'DEN',124:'GHA',125:'PAR',
+  126:'ESP',127:'ENG',128:'ENG',129:'BRA',130:'FRA',131:'ENG',132:'FRA',133:'FRA',134:'ECU',135:'ARG',
+  136:'ENG',137:'SEN',138:'UKR',139:'FRA',140:'ENG',141:'ENG',142:'FRA',143:'FRA',144:'ENG',145:'BEL',
+  146:'ENG',147:'ENG',148:'POR',149:'DEN',150:'ENG',
+  151:'ENG',152:'FRA',153:'ENG',154:'DEN',155:'FRA',156:'DEN',157:'ENG',158:'CIV',159:'ENG',160:'FRA',
+  161:'ENG',162:'FRA',163:'FRA',164:'SYC',165:'SEN',166:'COL',167:'ENG',168:'JPN',169:'ENG',170:'ENG',
+  171:'ENG',172:'JPN',173:'ENG',174:'ENG',175:'ENG',
+  176:'ENG',177:'ENG',178:'SEN',179:'ENG',180:'ENG',181:'ENG',182:'UKR',183:'GER',184:'ENG',185:'ENG',
+  186:'ENG',187:'ENG',188:'POR',189:'SEN',190:'ENG',191:'GHA',192:'ENG',193:'ENG',194:'IRL',195:'SEN',
+  196:'DEN',197:'SCO',198:'ENG',199:'ENG',200:'BEL',
+  201:'GER',202:'BRA',203:'USA',204:'BRA',205:'NGA',206:'JPN',207:'ENG',208:'SCO',209:'NED',210:'DEN',
+  211:'NED',212:'SCO',213:'BRA',214:'WAL',215:'SWE',216:'POR',217:'NGA',218:'SRB',219:'FRA',220:'MLI',
+  221:'ENG',222:'ENG',223:'ENG',224:'BRA',225:'ESP',
+  226:'BRA',227:'ENG',228:'ENG',229:'ENG',230:'BRA',231:'SWE',232:'IRL',233:'WAL',234:'ENG',235:'ENG',
+  236:'ENG',237:'ENG',238:'IRQ',239:'ENG',240:'ENG',241:'ENG',242:'ENG',243:'EGY',244:'ENG',245:'KOS',
+  246:'AUS',247:'AUS',248:'ENG',249:'PAR',250:'ENG',
+  251:'DEN',252:'GHA',253:'MAR',254:'BRA',255:'FRA',256:'NED',257:'NGA',258:'ENG',259:'ENG',260:'ENG',
+  261:'POR',262:'ENG',263:'DEN',264:'ENG',265:'DEN',266:'NGA',267:'ENG',268:'JAM',269:'DEN',270:'ENG',
+  271:'ENG',272:'WAL',273:'ENG',274:'ENG',275:'ENG',
+  276:'BRA',277:'EGY',278:'NED',279:'ENG',280:'ARG',281:'NED',282:'HUN',283:'COL',284:'NED',285:'BRA',
+  286:'POR',287:'FRA',288:'IRL',289:'SCO',290:'ENG',291:'ENG',292:'SCO',293:'JPN',294:'ENG',295:'ENG',
+  296:'ITA',297:'IRL',298:'GRE',299:'ESP',300:'ENG',
+  301:'BRA',302:'NOR',303:'ENG',304:'POR',305:'POR',306:'CRO',307:'ESP',308:'BEL',309:'BEL',310:'BRA',
+  311:'ENG',312:'ENG',313:'ENG',314:'SUI',315:'ENG',316:'NED',317:'GER',318:'NOR',319:'BRA',320:'TUR',
+  321:'ARG',322:'GER',323:'ENG',324:'ENG',325:'ENG',
+  326:'POR',327:'ENG',328:'ARG',329:'CIV',330:'DEN',331:'ARG',332:'ENG',333:'POR',334:'NED',335:'CMR',
+  336:'MAR',337:'SCO',338:'ENG',339:'ENG',340:'ENG',341:'BRA',342:'ENG',343:'BRA',344:'NED',345:'DEN',
+  346:'NED',347:'ENG',348:'TUR',349:'NIR',350:'ENG',
+  351:'ENG',352:'SWE',353:'BRA',354:'ENG',355:'NED',356:'BRA',357:'ENG',358:'ENG',359:'BRA',360:'ENG',
+  361:'ENG',362:'SCO',363:'DEN',364:'ENG',365:'ENG',366:'SUI',367:'ENG',368:'PAN',369:'PAR',370:'ENG',
+  371:'SVK',372:'ENG',373:'ENG',374:'GRE',375:'SCO',
+  376:'BEL',377:'WAL',378:'WAL',379:'SWE',380:'MLI',381:'NGA',382:'ENG',383:'NZL',384:'SRB',385:'USA',
+  386:'BEL',387:'IRL',388:'SEN',389:'FRA',390:'ENG',391:'ARG',392:'CIV',393:'BRA',394:'SCO',395:'ENG',
+  396:'ENG',397:'ENG',398:'BEL',399:'USA',400:'ENG',
+  401:'IRL',402:'ENG',403:'POR',404:'ENG',405:'ENG',406:'JPN',407:'ENG',408:'ENG',409:'POL',410:'FRA',
+  411:'ENG',412:'SCO',413:'ENG',414:'NGA',415:'NGA',416:'IRL',417:'ENG',418:'ENG',419:'IRL',420:'NGA',
+  421:'SEN',422:'MLI',423:'CHI',424:'BEL',425:'ENG',
+  426:'ITA',427:'ARG',428:'NED',429:'ENG',430:'KOR',431:'ITA',432:'SWE',433:'SEN',434:'ENG',435:'BRA',
+  436:'WAL',437:'ESP',438:'URU',439:'ENG',440:'FRA',441:'SWE',442:'MLI',443:'ENG',444:'WAL',445:'BRA',
+  446:'ENG',447:'ENG',448:'ENG',449:'ENG',450:'ENG',
+  451:'ENG',452:'GHA',453:'BRA',454:'NED',455:'ENG',456:'FRA',457:'MEX',458:'GER',459:'ITA',460:'CZE',
+  461:'GRE',462:'ALG',463:'ENG',464:'FRA',465:'MAR',466:'ARG',467:'FRA',468:'CZE',469:'ENG',470:'ENG',
+  471:'JAM',472:'ENG',473:'ENG',474:'POL',475:'ESP',
+  476:'POR',477:'BRA',478:'ALG',479:'BRA',480:'POR',481:'KOR',482:'POR',483:'ENG',484:'ESP',485:'POR',
+  486:'POR',487:'ENG',488:'MLI',489:'URU',490:'CMR',491:'POR',492:'POR',493:'AUT',494:'IRL',495:'ENG',
+  496:'ENG',497:'CHI',498:'FRA',499:'IRL',500:'ENG',
+};
+function natFlag(id){
+  const c=natMap[id]||'ENG';
+  const isoMap={ENG:'gb-eng',SCO:'gb-sct',WAL:'gb-wls',NIR:'gb-nir',BRA:'br',FRA:'fr',GER:'de',ESP:'es',ARG:'ar',POR:'pt',NED:'nl',BEL:'be',ITA:'it',NOR:'no',DEN:'dk',SWE:'se',POL:'pl',UKR:'ua',GHA:'gh',JPN:'jp',KOR:'kr',IRL:'ie',USA:'us',SEN:'sn',COL:'co',BFA:'bf',CMR:'cm',COD:'cd',ECU:'ec',HUN:'hu',TUR:'tr',MEX:'mx',CIV:'ci',SRB:'rs',MAR:'ma',CRO:'hr',SUI:'ch',AUT:'at',CZE:'cz',GRE:'gr',ALG:'dz',MLI:'ml',NGA:'ng',NZL:'nz',AUS:'au',URU:'uy',CHI:'cl',PAR:'py',PAN:'pa',SVK:'sk',EGY:'eg',ITA:'it',JAM:'jm',KOS:'xk',IRQ:'iq',SYC:'sc',BEL:'be'};
+  const iso=isoMap[c]||'gb';
+  return '<img src="https://flagcdn.com/40x30/'+iso+'.png" style="width:20px;height:15px;border-radius:2px;vertical-align:middle;margin-right:4px" alt="'+c+'">';
+}
+
+const players=rawPlayers.map(p=>{const[bg,tc]=clubTheme[p.club]||['#1e1e1e','#fff'];return{...p,bg,tc,initials:ini(p.name)};});
+
+const clubs=[...new Set(players.map(p=>p.club))].sort();
+['filter-club','lb-filter-club'].forEach(elId=>{
+  const el=document.getElementById(elId);
+  if(!el)return;
+  clubs.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;el.appendChild(o);});
+});
+
+const VOTED_KEY='whw_voted_v3';
+let voted_map={};
+try{voted_map=JSON.parse(localStorage.getItem(VOTED_KEY)||'{}');}catch(e){}
+function saveVoted(){try{localStorage.setItem(VOTED_KEY,JSON.stringify(voted_map));}catch(e){}}
+
+async function getVotes(){
+  try{const r=await fetch(`${SUPABASE_URL}/rest/v1/votes?select=player_id,value`,{headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}});return r.ok?r.json():[];}catch(e){return[];}
+}
+async function submitVote(player_id,value){
+  try{const r=await fetch(`${SUPABASE_URL}/rest/v1/votes`,{method:'POST',headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`,'Content-Type':'application/json','Prefer':'return=minimal'},body:JSON.stringify({player_id,value})});return r.ok;}catch(e){return false;}
+}
+function computeMeans(rows){
+  const map={};
+  rows.forEach(r=>{if(!map[r.player_id])map[r.player_id]=[];map[r.player_id].push(r.value);});
+  const out={};
+  Object.entries(map).forEach(([id,vals])=>{out[id]={mean:Math.round(vals.reduce((a,b)=>a+b,0)/vals.length),count:vals.length};});
+  return out;
+}
+let meansCache={};
+async function loadMeans(){const rows=await getVotes();meansCache=computeMeans(rows);}
+function fmt(v){return v==null?'—':'£'+v+'m';}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+
+function getFiltered(clubSel,posSel,votedSel,search){
+  const q=(search||'').toLowerCase();
+  return players.filter(p=>{
+    if(clubSel&&p.club!==clubSel)return false;
+    if(posSel&&p.pos!==posSel)return false;
+    if(votedSel==='voted'&&!voted_map[p.id])return false;
+    if(votedSel==='unvoted'&&voted_map[p.id])return false;
+    if(q&&!p.name.toLowerCase().includes(q)&&!p.club.toLowerCase().includes(q))return false;
+    return true;
+  });
+}
+
+function renderCards(){
+  const club=document.getElementById('filter-club').value;
+  const pos=document.getElementById('filter-pos').value;
+  const votedF=document.getElementById('filter-voted').value;
+  const search=document.getElementById('search').value;
+  const filtered=getFiltered(club,pos,votedF,search);
+  const grid=document.getElementById('grid');
+  const pagEl=document.getElementById('pagination');
+  if(!filtered.length){grid.innerHTML='<div class="empty">No players match this filter.</div>';pagEl.innerHTML='';return;}
+  const totalPages=Math.ceil(filtered.length/PAGE_SIZE);
+  if(page>totalPages)page=totalPages;
+  const slice=filtered.slice((page-1)*PAGE_SIZE,page*PAGE_SIZE);
+  grid.innerHTML=slice.map(p=>{
+    const m=meansCache[p.id];
+    const mean=m?m.mean:null;
+    const count=m?m.count:0;
+    const hasVoted=!!voted_map[p.id];
+    const def=Math.round(p.max/2);
+    return `<div class="card" id="card-${p.id}">
+      <div class="card-top">
+        <div class="avatar" style="background:${p.bg};color:${p.tc}">${p.initials}</div>
+        <div><div class="player-name">${natFlag(p.id)}${p.name}</div><div class="player-meta">${p.club} · ${p.pos}</div></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-label">Fan Price Tag</div><div class="stat-value yellow" id="mean-${p.id}">${fmt(mean)}</div></div>
+        <div class="stat"><div class="stat-label">Total votes</div><div class="stat-value" id="vcount-${p.id}">${count}</div></div>
+      </div>
+      <div class="vote-label">Your valuation · max £${p.max}m</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="${p.max}" step="1" value="${hasVoted?voted_map[p.id]:def}" id="slider-${p.id}" ${hasVoted?'disabled':''} oninput="document.getElementById('disp-${p.id}').textContent='£'+this.value+'m'">
+        <span class="slider-display" id="disp-${p.id}">£${hasVoted?voted_map[p.id]:def}m</span>
+      </div>
+      <button class="vote-btn${hasVoted?' voted':''}" id="btn-${p.id}" onclick="vote(${p.id})" ${hasVoted?'disabled':''}>
+        ${hasVoted?'✓ Voted':'Submit valuation'}
+      </button>
+    </div>`;
+  }).join('');
+  pagEl.innerHTML=totalPages>1?`
+    <button class="page-btn" onclick="page--;renderCards()" ${page<=1?'disabled':''}>← Prev</button>
+    <span class="page-info">Page ${page} of ${totalPages} · ${filtered.length} players</span>
+    <button class="page-btn" onclick="page++;renderCards()" ${page>=totalPages?'disabled':''}>Next →</button>
+  `:`<span class="page-info">${filtered.length} players</span>`;
+}
+
+async function vote(id){
+  if(voted_map[id])return;
+  const val=parseInt(document.getElementById('slider-'+id).value);
+  const btn=document.getElementById('btn-'+id);
+  btn.textContent='Submitting...';btn.disabled=true;
+  const ok=await submitVote(id,val);
+  if(ok){
+    voted_map[id]=val;saveVoted();
+    if(!meansCache[id])meansCache[id]={mean:val,count:1};
+    else{const o=meansCache[id],n=o.count+1;meansCache[id]={mean:Math.round((o.mean*o.count+val)/n),count:n};}
+    document.getElementById('mean-'+id).textContent=fmt(meansCache[id].mean);
+    document.getElementById('vcount-'+id).textContent=meansCache[id].count;
+    document.getElementById('slider-'+id).disabled=true;
+    btn.textContent='✓ Voted';btn.classList.add('voted');
+    showToast('Vote submitted! 🎉');
+    updateProgress();
+  }else{
+    btn.textContent='Submit valuation';btn.disabled=false;
+    showToast('Something went wrong — try again');
+  }
+}
+
+function renderLeaderboard(){
+  const club=document.getElementById('lb-filter-club').value;
+  const pos=document.getElementById('lb-filter-pos').value;
+  const search=document.getElementById('lb-search').value;
+  const filtered=getFiltered(club,pos,'',search);
+  const ranked=filtered.map(p=>({p,data:meansCache[p.id]})).filter(x=>x.data).sort((a,b)=>b.data.mean-a.data.mean);
+  const el=document.getElementById('lb-content');
+  if(!ranked.length){el.innerHTML='<div class="empty">No votes yet — head to the Vote tab to get started!</div>';return;}
+  const maxMean=ranked[0].data.mean;
+  const rc=['gold','silver','bronze'];
+  el.innerHTML=`<div class="lb-wrap"><table>
+    <thead><tr><th>#</th><th>Player</th><th>Pos</th><th>Mean value</th><th>Votes</th></tr></thead>
+    <tbody>${ranked.map((x,i)=>`<tr>
+      <td><span class="rank ${rc[i]||''}">${i+1}</span></td>
+      <td><span class="lb-avatar" style="background:${x.p.bg};color:${x.p.tc}">${x.p.initials}</span>
+        <span><div class="lb-name">${natFlag(x.p.id)}${x.p.name}</div><div class="lb-club">${x.p.club}</div></span></td>
+      <td><span class="pos-badge">${x.p.pos}</span></td>
+      <td><span class="mean-val">${fmt(x.data.mean)}</span>
+        <div class="bar-wrap"><div class="bar" style="width:${Math.round(x.data.mean/maxMean*100)}%"></div></div></td>
+      <td class="votes-col">${x.data.count} vote${x.data.count!==1?'s':''}</td>
+    </tr>`).join('')}</tbody>
+  </table></div>`;
+}
+
+function setTab(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  document.getElementById('trending-view').style.display=tab==='trending'?'':'none';
+  document.getElementById('vote-view').style.display=tab==='vote'?'':'none';
+  document.getElementById('lb-view').style.display=tab==='leaderboard'?'':'none';
+  document.getElementById('clubs-view').style.display=tab==='clubs'?'':'none';
+  if(tab==='trending')renderTrending();
+  if(tab==='leaderboard')renderLeaderboard();
+  if(tab==='clubs'){showClubsList();renderClubs();}
+}
+
+function updateProgress(){
+  const count = Object.keys(voted_map).length;
+  const total = players.length;
+  const pct = Math.round(count/total*100);
+  document.getElementById('prog-count').textContent = count;
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+}
+
+async function getTrending(){
+  try{
+    const since=new Date(Date.now()-24*60*60*1000).toISOString();
+    const res=await fetch(`${SUPABASE_URL}/rest/v1/votes?select=player_id,created_at&created_at=gte.${since}`,{
+      headers:{'apikey':SUPABASE_KEY,'Authorization':`Bearer ${SUPABASE_KEY}`}
+    });
+    return res.ok?res.json():[];
+  }catch(e){return[];}
+}
+
+async function renderTrending(){
+  const el=document.getElementById('trending-list');
+  const upd=document.getElementById('trending-updated');
+  el.innerHTML='<div class="loading"><div class="spinner"></div> Loading...</div>';
+  const rows=await getTrending();
+  if(!rows.length){
+    el.innerHTML='<div class="empty">No votes in the last 24 hours yet — be the first! Head to the Vote tab.</div>';
+    upd.textContent='';
+    return;
+  }
+  // Count votes per player
+  const counts={};
+  rows.forEach(r=>{counts[r.player_id]=(counts[r.player_id]||0)+1;});
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,20);
+  const maxVotes=sorted[0][1];
+  const rc=['t1','t2','t3'];
+  el.innerHTML=sorted.map(([pid,count],i)=>{
+    const p=players.find(pl=>pl.id===parseInt(pid));
+    if(!p)return'';
+    const m=meansCache[p.id];
+    return`<div class="trending-item">
+      <div class="trending-rank ${rc[i]||''}">${i+1}</div>
+      <div class="trending-avatar" style="background:${p.bg};color:${p.tc}">${p.initials}</div>
+      <div class="trending-info">
+        <div class="trending-name">${natFlag(p.id)}${p.name}</div>
+        <div class="trending-meta">${p.club} · ${p.pos} · Fan Price: ${fmt(m?m.mean:null)}</div>
+        <div class="trending-bar-wrap"><div class="trending-bar" style="width:${Math.round(count/maxVotes*100)}%"></div></div>
+      </div>
+      <div class="trending-votes">
+        <div class="trending-vote-count">${count}</div>
+        <div class="trending-vote-label">vote${count!==1?'s':''}</div>
+      </div>
+    </div>`;
+  }).join('');
+  upd.textContent='Updated just now · last 24 hours';
+}
+
+// FAVOURITES
+const FAV_KEY='whw_favclubs_v1';
+let favClubs={};
+try{favClubs=JSON.parse(localStorage.getItem(FAV_KEY)||'{}');}catch(e){}
+function saveFavs(){try{localStorage.setItem(FAV_KEY,JSON.stringify(favClubs));}catch(e){}}
+function toggleFav(club,e){
+  e.stopPropagation();
+  if(favClubs[club]) delete favClubs[club];
+  else favClubs[club]=true;
+  saveFavs();
+  renderClubs();
+}
+
+// CLUB DATA
+function getClubData(club){
+  const clubPlayers=players.filter(p=>p.club===club);
+  const voted=clubPlayers.filter(p=>meansCache[p.id]);
+  const totalValue=voted.reduce((s,p)=>s+(meansCache[p.id]?.mean||0),0);
+  const avgValue=voted.length?Math.round(totalValue/voted.length):null;
+  const top=voted.sort((a,b)=>(meansCache[b.id]?.mean||0)-(meansCache[a.id]?.mean||0)).slice(0,3);
+  return{clubPlayers,voted,totalValue,avgValue,top};
+}
+
+function renderClubs(){
+  const grid=document.getElementById('clubs-grid');
+  const q=(document.getElementById('club-search')?.value||'').toLowerCase();
+  const filtered=clubs.filter(c=>c.toLowerCase().includes(q));
+  const favList=filtered.filter(c=>favClubs[c]);
+  const otherList=filtered.filter(c=>!favClubs[c]).sort((a,b)=>a.localeCompare(b));
+  let html='';
+  if(favList.length){
+    html+=`<div style="grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding-bottom:4px;">⭐ Favourites</div>`;
+    html+=favList.map(club=>clubCardHTML(club)).join('');
+    html+=`<div style="grid-column:1/-1;border-top:1px solid var(--border);margin:4px 0"></div>`;
+    html+=`<div style="grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);padding-bottom:4px;">All Clubs</div>`;
+  }
+  if(!otherList.length&&!favList.length){
+    html='<div class="empty" style="grid-column:1/-1">No clubs match your search.</div>';
+  } else {
+    html+=otherList.map(club=>clubCardHTML(club)).join('');
+  }
+  grid.innerHTML=html;
+}
+
+function clubCardHTML(club){
+  const{clubPlayers,voted,totalValue,top}=getClubData(club);
+  const isFav=!!favClubs[club];
+  const topNames=top.length?top.map(p=>p.name.split(' ').pop()).join(', '):'No votes yet';
+  return `<div class="club-card" onclick="showClubDetail('${club}')">
+    <div class="club-card-top">
+      <div class="club-name">${club}</div>
+      <button class="club-fav${isFav?' active':''}" onclick="toggleFav('${club}',event)" title="${isFav?'Unfavourite':'Favourite'}">${isFav?'⭐':'☆'}</button>
+    </div>
+    <div class="club-stats">
+      <div class="club-stat"><div class="club-stat-label">Squad value</div><div class="club-stat-value">${totalValue?'£'+totalValue+'m':'—'}</div></div>
+      <div class="club-stat"><div class="club-stat-label">Players voted</div><div class="club-stat-value">${voted.length}/${clubPlayers.length}</div></div>
+    </div>
+    <div class="club-top-players">Top players: <span>${topNames}</span></div>
+  </div>`;
+}
+
+function showClubDetail(club){
+  document.getElementById('clubs-list-view').style.display='none';
+  document.getElementById('club-detail-view').style.display='';
+  const{clubPlayers,totalValue,avgValue,voted}=getClubData(club);
+  document.getElementById('club-detail-name').innerHTML=club.toUpperCase().replace(' ','&nbsp;<span>')+' </span>';
+  document.getElementById('club-detail-summary').innerHTML=`
+    <div class="club-summary-stat"><div class="club-summary-label">Total squad value</div><div class="club-summary-value">${totalValue?'£'+totalValue+'m':'No votes yet'}</div></div>
+    <div class="club-summary-stat"><div class="club-summary-label">Avg player value</div><div class="club-summary-value">${avgValue?'£'+avgValue+'m':'—'}</div></div>
+    <div class="club-summary-stat"><div class="club-summary-label">Players voted</div><div class="club-summary-value">${voted.length}/${clubPlayers.length}</div></div>
+  `;
+  const sorted=[...clubPlayers].sort((a,b)=>(meansCache[b.id]?.mean||0)-(meansCache[a.id]?.mean||0));
+  document.getElementById('club-detail-grid').innerHTML=sorted.map(p=>{
+    const m=meansCache[p.id];
+    const mean=m?m.mean:null;
+    const count=m?m.count:0;
+    const hasVoted=!!voted_map[p.id];
+    const def=Math.round(p.max/2);
+    return `<div class="card" id="card-${p.id}">
+      <div class="card-top">
+        <div class="avatar" style="background:${p.bg};color:${p.tc}">${p.initials}</div>
+        <div><div class="player-name">${natFlag(p.id)}${p.name}</div><div class="player-meta">${p.club} · ${p.pos}</div></div>
+      </div>
+      <div class="stats-row">
+        <div class="stat"><div class="stat-label">Fan Price Tag</div><div class="stat-value" style="color:var(--accent)" id="mean-${p.id}-club">${fmt(mean)}</div></div>
+        <div class="stat"><div class="stat-label">Total votes</div><div class="stat-value" id="vcount-${p.id}-club">${count}</div></div>
+      </div>
+      <div class="vote-label">Your valuation · max £${p.max}m</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="${p.max}" step="1" value="${hasVoted?voted_map[p.id]:def}" id="slider-${p.id}-club" ${hasVoted?'disabled':''} oninput="document.getElementById('disp-${p.id}-club').textContent='£'+this.value+'m'">
+        <span class="slider-display" id="disp-${p.id}-club">£${hasVoted?voted_map[p.id]:def}m</span>
+      </div>
+      <button class="vote-btn${hasVoted?' voted':''}" id="btn-${p.id}-club" onclick="voteFromClub(${p.id})" ${hasVoted?'disabled':''}>
+        ${hasVoted?'✓ Voted':'Submit valuation'}
+      </button>
+    </div>`;
+  }).join('');
+}
+
+async function voteFromClub(id){
+  if(voted_map[id])return;
+  const slider=document.getElementById('slider-'+id+'-club');
+  if(!slider)return;
+  const val=parseInt(slider.value);
+  const btn=document.getElementById('btn-'+id+'-club');
+  btn.textContent='Submitting...';btn.disabled=true;
+  const ok=await submitVote(id,val);
+  if(ok){
+    voted_map[id]=val;saveVoted();
+    if(!meansCache[id])meansCache[id]={mean:val,count:1};
+    else{const o=meansCache[id],n=o.count+1;meansCache[id]={mean:Math.round((o.mean*o.count+val)/n),count:n};}
+    const meanEl=document.getElementById('mean-'+id+'-club');
+    const vcountEl=document.getElementById('vcount-'+id+'-club');
+    if(meanEl)meanEl.textContent=fmt(meansCache[id].mean);
+    if(vcountEl)vcountEl.textContent=meansCache[id].count;
+    slider.disabled=true;
+    btn.textContent='✓ Voted';btn.classList.add('voted');
+    showToast('Vote submitted! 🎉');
+    updateProgress();
+  }else{
+    btn.textContent='Submit valuation';btn.disabled=false;
+    showToast('Something went wrong — try again');
+  }
+}
+
+function showClubsList(){
+  document.getElementById('club-detail-view').style.display='none';
+  document.getElementById('clubs-list-view').style.display='';
+}
+
+function renderMyClubs(){
+  const el=document.getElementById('myclubs-content');
+  const favList=Object.keys(favClubs);
+  if(!favList.length){
+    el.innerHTML=`<div class="no-favs">⭐ No favourite clubs yet!<br><br>Head to the <strong>Clubs</strong> tab and tap the star on any club to favourite it.</div>`;
+    return;
+  }
+  el.innerHTML='<div class="clubs-grid" style="padding:1.5rem">'+favList.map(club=>{
+    const{clubPlayers,voted,totalValue,top}=getClubData(club);
+    const topNames=top.length?top.map(p=>p.name.split(' ').pop()).join(', '):'No votes yet';
+    return `<div class="club-card" onclick="setTab('clubs',document.querySelector('.tab:nth-child(3)'));setTimeout(()=>showClubDetail('${club}'),50)">
+      <div class="club-card-top">
+        <div class="club-name">⭐ ${club}</div>
+        <button class="club-fav" onclick="toggleFav('${club}',event);renderMyClubs()">✕</button>
+      </div>
+      <div class="club-stats">
+        <div class="club-stat"><div class="club-stat-label">Squad value</div><div class="club-stat-value">${totalValue?'£'+totalValue+'m':'—'}</div></div>
+        <div class="club-stat"><div class="club-stat-label">Players voted</div><div class="club-stat-value">${voted.length}/${clubPlayers.length}</div></div>
+      </div>
+      <div class="club-top-players">Top players: <span>${topNames}</span></div>
+    </div>`;
+  }).join('')+'</div>';
+}
+
+// Theme toggle
+function toggleTheme(){
+  const isDark=document.documentElement.classList.toggle('dark');
+  document.getElementById('themeBtn').textContent=isDark?'☀️ Light':'🌙 Dark';
+  try{localStorage.setItem('whw_theme',isDark?'dark':'light');}catch(e){}
+}
+// Load saved theme
+try{
+  const saved=localStorage.getItem('whw_theme');
+  if(saved==='dark'){
+    document.documentElement.classList.add('dark');
+    document.getElementById('themeBtn').textContent='☀️ Light';
+  }
+}catch(e){}
+
+(async()=>{await loadMeans();renderCards();updateProgress();renderTrending();})();
+</script>
+
+</body>
+</html>
